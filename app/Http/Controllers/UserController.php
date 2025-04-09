@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\UserRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
 
@@ -13,15 +14,8 @@ class UserController extends Controller
         return response()->json($users, 200);
     }
 
-    public function store(Request $request)
+    public function store(UserRequest $request)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
-            'password' => 'required|string|min:8|confirmed',
-            'password_confirmation' => 'required|same:password',
-        ]);
-
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
@@ -38,15 +32,9 @@ class UserController extends Controller
         return response()->json($user, 200);
     }
 
-    public function update(Request $request, $id)
+    public function update(UserRequest $request, $id)
     {
         $user = User::findOrFail($id);
-
-        $request->validate([
-            'name' => 'string|max:255',
-            'email' => 'email|unique:users,email,' . $id,
-            'password' => 'nullable|string|min:8',
-        ]);
 
         $user->name = $request->name ?? $user->name;
         $user->email = $request->email ?? $user->email;

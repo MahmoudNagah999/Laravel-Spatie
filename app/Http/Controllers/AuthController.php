@@ -2,21 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\AuthRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
-    public function register(Request $request)
+    public function register(AuthRequest $request)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8|confirmed',
-            'password_confirmation' => 'required|same:password',
-        ]);
-
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
@@ -36,14 +30,8 @@ class AuthController extends Controller
         }
     }
 
-    public function login(Request $request)
+    public function login(AuthRequest $request)
     {
-        $request->validate([
-            'email' => 'required|string|email',
-            'password' => 'required|string',
-            'remember_me' => 'boolean',
-        ]);
-
         $credentials = $request->only('email', 'password');
         if(!Auth::attempt($credentials)) {
             return response()->json(['error' => 'Unauthorized'], 401);
@@ -59,12 +47,12 @@ class AuthController extends Controller
         ]);
     }
 
-    public function user(Request $request)
+    public function user(AuthRequest $request)
     {
         return response()->json($request->user());
     }
 
-    public function logout(Request $request)
+    public function logout(AuthRequest $request)
     {
         $request->user()->tokens()->delete();
 
