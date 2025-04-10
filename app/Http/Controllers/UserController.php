@@ -4,55 +4,69 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\UserRequest;
 use App\Models\User;
+use App\Services\UserService;
+use App\Traits\ApiResponse;
 use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
-    public function index()
+
+    use ApiResponse;
+
+    protected UserService $userService;
+   
+    public function __construct( UserService $userService)
     {
-        $users = User::all();
-        return response()->json($users, 200);
+        $this->userService = $userService;
+    }
+    
+    public function index(UserRequest $request)
+    {
+        try {
+            $users = $this->userService->paginate();
+            return $this->paginated($users, 'Users retrieved successfully', 200);
+        } catch (\Exception $e) {
+            return $this->error($e->getMessage(), 500);
+        }
     }
 
     public function store(UserRequest $request)
     {
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => bcrypt($request->password),
-        ]);
-
-        return response()->json(['message' => 'User created', 'user' => $user], 201);
+        try {
+            $user = $this->userService->create($request->validated());
+            return $this->success($user, 'User created successfully', 201);
+        } catch (\Exception $e) {
+            return $this->error($e->getMessage() , 500);
+        }
     }
-
 
     public function show($id)
     {
-        $user = User::findOrFail($id);
-        return response()->json($user, 200);
+        try{
+            $user = $this->userService->find($id);
+            return $this->success($user, 'User retrieved successfully', 200);
+        } catch (\Exception $e) {
+            return $this->error($e->getMessage(), 404);
+        }
     }
 
     public function update(UserRequest $request, $id)
     {
-        $user = User::findOrFail($id);
-
-        $user->name = $request->name ?? $user->name;
-        $user->email = $request->email ?? $user->email;
-
-        if ($request->filled('password')) {
-            $user->password = bcrypt($request->password);
+        try{  
+            $user = $this->userService->update($id, $request->validated());
+            return $this->success($user, 'User updated successfully', 200);
+        } catch (\Exception $e) {
+            return $this->error($e->getMessage(), 404);
         }
-
-        $user->save();
-
-        return response()->json(['message' => 'User updated', 'user' => $user], 200);
     }
 
     public function destroy($id)
     {
-        $user = User::findOrFail($id);
-        $user->delete();
-
-        return response()->json(['message' => 'User deleted'], 200);
+        try {
+            $this->userService->delete($id);
+            return $this->success([], 'User deleted successfully', 200);
+        } catch (\Exception $e) {
+            return $this->error($e->getMessage(), 404);
+        }
     }
 }
