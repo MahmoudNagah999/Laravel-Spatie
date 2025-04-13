@@ -5,21 +5,25 @@ use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-Route::group(['prefix' => 'auth'], function(){
-    Route::post('/login', [AuthController::class, 'login'])->name('login');
-    Route::post('/register', [AuthController::class, 'register']);
+Route::post('/login', [AuthController::class, 'login'])->name('login');
+// Route::post('/register', [AuthController::class, 'register']);
 
-    Route::group(['middleware' => 'auth:sanctum'], function () {
-        Route::get('/logout',[AuthController::class, 'logout']);
-        Route::get('/user', [AuthController::class, 'user']);
+Route::group(['middleware' => 'auth:sanctum'], function () {
+    /** Auth Controller **/
+    Route::controller(AuthController::class)->group(function () {
+        Route::get('/logout','logout');
+        Route::get('/user', 'user');
+    });
+
+    /** User Controller **/
+    Route::controller(UserController::class)->prefix('users')->group(function () {
+        Route::get('/', 'index');
+        Route::post('/', 'store');
+        Route::get('/{id}', 'show');
+        Route::put('/{id}', 'update');
+        Route::delete('/{id}', 'destroy');
+
+        // status toggle user (active/inactive)
+        // reset password by admin
     });
 });
-
-Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/users', [UserController::class, 'index']);
-    Route::post('/users', [UserController::class, 'store']);
-    Route::get('/users/{id}', [UserController::class, 'show']);
-    Route::put('/users/{id}', [UserController::class, 'update']);
-    Route::delete('/users/{id}', [UserController::class, 'destroy']);
-});
-
