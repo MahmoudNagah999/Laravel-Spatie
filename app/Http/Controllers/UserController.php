@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\UserRequest;
+use App\Http\Resources\UserResource;
 use App\Services\UserService;
 use App\Traits\ApiResponse;
 
@@ -22,9 +23,12 @@ class UserController extends Controller
     {
         try {
             $users = $this->userService->paginate();
-            return $this->paginated($users, 'Users retrieved successfully', 200);
+            return $this->paginatedResponse(
+                UserResource::collection($users), 
+                'Users retrieved successfully', 
+                200);
         } catch (\Exception $e) {
-            return $this->error($e->getMessage(), 500);
+            return $this->errorResponse($e->getMessage(), 500);
         }
     }
 
@@ -32,9 +36,12 @@ class UserController extends Controller
     {
         try {
             $user = $this->userService->create($request->validated());
-            return $this->success($user, 'User created successfully', 201);
+            return $this->successResponse(
+                UserResource::make($user), 
+                'User created successfully', 
+                201);
         } catch (\Exception $e) {
-            return $this->error($e->getMessage() , 500);
+            return $this->errorResponse($e->getMessage() , 500);
         }
     }
 
@@ -42,9 +49,12 @@ class UserController extends Controller
     {
         try{
             $user = $this->userService->find($id);
-            return $this->success($user, 'User retrieved successfully', 200);
+            return $this->successResponse(
+                UserResource::make($user), 
+                'User retrieved successfully', 
+                200);
         } catch (\Exception $e) {
-            return $this->error($e->getMessage(), 404);
+            return $this->errorResponse($e->getMessage(), 404);
         }
     }
 
@@ -52,9 +62,12 @@ class UserController extends Controller
     {
         try{  
             $user = $this->userService->update($id, $request->validated());
-            return $this->success($user, 'User updated successfully', 200);
+            return $this->successResponse(
+                UserResource::make($user), 
+                'User updated successfully', 
+                200);
         } catch (\Exception $e) {
-            return $this->error($e->getMessage(), 404);
+            return $this->errorResponse($e->getMessage(), 404);
         }
     }
 
@@ -62,20 +75,19 @@ class UserController extends Controller
     {
         try {
             $this->userService->delete($id);
-            return $this->success([], 'User deleted successfully', 200);
+            return $this->successResponse(
+                [], 
+                'User deleted successfully', 
+                200);
         } catch (\Exception $e) {
-            return $this->error($e->getMessage(), 404);
+            return $this->errorResponse($e->getMessage(), 404);
         }
     }
 
     public function toggleStatus(int $id)
     {
-        try {
-            $this->userService->toggleStatus($id);
-            return $this->success([], 'User status updated successfully', 200);
-        } catch (\Exception $e) {
-            return $this->error($e->getMessage(), 404);
-        }
+        $this->userService->toggleStatus($id);
+        return $this->successResponse([], 'User status updated successfully', 200);
     }
 
     public function resetPassword(UserRequest $request, $id)
@@ -86,9 +98,12 @@ class UserController extends Controller
             $this->userService->update($id, $data);
 
             $user->tokens()->delete();
-            return $this->success([], 'User password updated successfully', 200);
+            return $this->successResponse(
+                UserResource::make($user), 
+                'User password updated successfully', 
+                200);
         } catch (\Exception $e) {
-            return $this->error($e->getMessage(), 404);
+            return $this->errorResponse($e->getMessage(), 404);
         }
     }
 }

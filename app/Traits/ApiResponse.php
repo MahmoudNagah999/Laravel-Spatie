@@ -6,7 +6,7 @@ use Illuminate\Http\JsonResponse;
 
 trait ApiResponse
 {
-    protected function success($data = null, $message = 'Success', $code = 200): JsonResponse
+    protected function successResponse($data = null, $message = 'Success', $code = 200): JsonResponse
     {
         return response()->json([
             'status'  => true,
@@ -15,16 +15,16 @@ trait ApiResponse
         ], $code);
     }
 
-    protected function error($message = 'Something went wrong', $code = 400): JsonResponse
+    protected function errorResponse($message = 'Something went wrong', $code = 400): JsonResponse
     {
         return response()->json([
             'status'  => false,
             'message' => $message,
-            'data'    => null,
+            'data'    => [],
         ], $code);
     }
 
-    protected function paginated($paginator, $message = 'Data fetched successfully', $code = 200): JsonResponse
+    protected function paginatedResponse($paginator, $message = 'Data fetched successfully', $code = 200): JsonResponse
     {
         return response()->json([
             'status'  => true,

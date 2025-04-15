@@ -19,9 +19,9 @@ class RolePermissionController extends Controller
             $data = $request->validated();
             $role = Role::create($data);
     
-            return $this->success($role, 'Role created successfully', 201);
+            return $this->successResponse($role, 'Role created successfully', 201);
         } catch (\Exception $e) {
-            return $this->error($e->getMessage(), 500);
+            return $this->errorResponse($e->getMessage(), 500);
         }
     }
 
@@ -46,9 +46,9 @@ class RolePermissionController extends Controller
             $user = User::findOrFail($userId);
             $user->assignRole($request->role);
 
-            return $this->success($user, 'Role assigned successfully', 200);
+            return $this->successResponse($user, 'Role assigned successfully', 200);
         } catch (\Exception $e) {
-            return $this->error($e->getMessage(), 500);
+            return $this->errorResponse($e->getMessage(), 500);
         }
     }
 
@@ -60,9 +60,9 @@ class RolePermissionController extends Controller
 
             $role->givePermissionTo($permission);
 
-            return $this->success($role, 'Permission assigned to role successfully', 200); 
+            return $this->successResponse($role, 'Permission assigned to role successfully', 200); 
         } catch (\Exception $e) {
-            return $this->error($e->getMessage(), 500);
+            return $this->errorResponse($e->getMessage(), 500);
         }  
     }
 
@@ -73,12 +73,12 @@ class RolePermissionController extends Controller
             $user = User::findOrFail($userId);
 
             if ($user->hasRole($request->role)) {
-                return $this->success($user, 'User has the role', 200);
+                return $this->successResponse($user, 'User has the role', 200);
             }
 
-            return $this->error('User does not have the role', 404);
+            return $this->errorResponse('User does not have the role', 404);
         } catch (\Exception $e) {
-            return $this->error($e->getMessage(), 500);
+            return $this->errorResponse($e->getMessage(), 500);
         }
     }
 
@@ -88,12 +88,12 @@ class RolePermissionController extends Controller
             $user = User::findOrFail($userId);
 
             if ($user->can($request->permission)) {
-                return $this->success($user, 'User has the permission', 200);
+                return $this->successResponse($user, 'User has the permission', 200);
             }
 
-            return $this->error('User does not have the permission', 404);
+            return $this->errorResponse('User does not have the permission', 404);
         } catch (\Exception $e) {
-            return $this->error($e->getMessage(), 500);
+            return $this->errorResponse($e->getMessage(), 500);
         }
     }
 
@@ -104,9 +104,9 @@ class RolePermissionController extends Controller
             $user = User::findOrFail($userId);
             $user->removeRole($request->role);
 
-            return $this->success($user, 'Role removed successfully', 200);
+            return $this->successResponse($user, 'Role removed successfully', 200);
         } catch (\Exception $e) {
-            return $this->error($e->getMessage(), 500);
+            return $this->errorResponse($e->getMessage(), 500);
         }
     }
 
@@ -118,9 +118,9 @@ class RolePermissionController extends Controller
 
             $role->revokePermissionTo($permission);
 
-            return $this->success($role, 'Permission removed from role successfully', 200);
+            return $this->successResponse($role, 'Permission removed from role successfully', 200);
         } catch (\Exception $e) {
-            return $this->error($e->getMessage(), 500);
+            return $this->errorResponse($e->getMessage(), 500);
         }
     }
 }

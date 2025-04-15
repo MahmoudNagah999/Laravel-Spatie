@@ -3,11 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\AuthRequest;
-use App\Models\User;
+use App\Http\Resources\AuthUserResource;
+use App\Http\Resources\UserResource;
 use App\Services\AuthService;
 use App\Traits\ApiResponse;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
@@ -22,9 +21,12 @@ class AuthController extends Controller
     public function register(AuthRequest $request) {
         try{
             $user = $this->authService->register($request->validated());
-            return $this->success($user, 'User registered successfully', 201);     
+            return $this->successResponse(
+                AuthUserResource::make($user),
+                'User registered successfully',
+                201);     
         } catch (\Exception $e) {
-            return $this->error($e->getMessage(), 500);
+            return $this->errorResponse($e->getMessage(), 500);
         }
     }
 
@@ -33,21 +35,30 @@ class AuthController extends Controller
             $credentials = $request->only('email', 'password');
             $user = $this->authService->login($credentials);
            
-            return $this->success($user, 'User logged in successfully', 200);
+            return $this->successResponse(
+                AuthUserResource::make($user), 
+                'User logged in successfully', 
+                200);
         } catch (\Exception $e) {
-            return $this->error($e->getMessage(), 500);
+            return $this->errorResponse($e->getMessage(), 500);
         }
     }
 
     public function user(AuthRequest $request)
     {
-        return $this->success($request->user(), 'User retrieved successfully', 200);
+        return $this->successResponse(
+            AuthUserResource::make($request->user()), 
+            'User retrieved successfully', 
+            200);
     }
 
     public function logout(AuthRequest $request)
     {
         $request->user()->tokens()->delete();
-        return $this->success([], 'Successfully logged out', 200);
+        return $this->successResponse(
+            [], 
+            'Successfully logged out', 
+            200);
     }
 
 }
