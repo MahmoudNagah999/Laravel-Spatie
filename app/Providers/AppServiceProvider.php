@@ -3,11 +3,10 @@
 namespace App\Providers;
 
 use App\Repositories\BaseRepository;
-use App\Repositories\Interfaces\BaseRepositoryInterface;
-use App\Repositories\Interfaces\UserRepositoryInterface;
 use App\Repositories\UserRepository;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Auth\Middleware\Authenticate;
+use Illuminate\Database\Eloquent\Model;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -16,7 +15,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $this->app->bind(BaseRepositoryInterface::class, BaseRepository::class);
+        // $this->app->bind(BaseRepositoryInterface::class, BaseRepository::class);
     }
 
     /**
@@ -24,6 +23,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Model::preventLazyLoading(! app()->isProduction());
+        
         Authenticate::redirectUsing(function ($request) { 
             return response()->json(['error' => 'Unauthorized'], 401); 
         });        

@@ -35,10 +35,12 @@ class TeamController extends Controller
     {
         try {
             $team = $this->teamService->create($request->validated());
+
             return $this->successResponse(
                 TeamResource::make($team), 
                 'Team created successfully', 
                 201);
+
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), 500);
         }
@@ -59,7 +61,7 @@ class TeamController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(TeamRequest $request, string $id)
+    public function update(TeamRequest $request, int $id)
     {
         try {
             $team = $this->teamService->update($id, $request->validated());
@@ -82,6 +84,32 @@ class TeamController extends Controller
             return $this->successResponse(
                null, 
                 'Team deleted successfully', 
+                200);
+        } catch (\Exception $e) {
+            return $this->errorResponse($e->getMessage(), 500);
+        }
+    }
+
+    public function addUser(int $id, TeamRequest $request)
+    {
+        try {
+            $this->teamService->addUser($id, $request->validated());
+            return $this->successResponse(
+                null, 
+                'User added to team successfully', 
+                200);
+        } catch (\Exception $e) {
+            return $this->errorResponse($e->getMessage(), 500);
+        }
+    }
+
+    public function removeUser(string $id, TeamRequest $request)
+    {
+        try {
+            $this->teamService->removeUser($id, $request->validated());
+            return $this->successResponse(
+                null, 
+                'User removed from team successfully', 
                 200);
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), 500);

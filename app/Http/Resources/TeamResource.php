@@ -20,6 +20,7 @@ class TeamResource extends JsonResource
             'name' => $this->name,
             'description' => $this->description,
             'created_at' => Carbon::parse($this->created_at)->format('Y-m-d H:i:s'),
+            'users' => UserResource::collection($this->users),
         ];
     }
 }

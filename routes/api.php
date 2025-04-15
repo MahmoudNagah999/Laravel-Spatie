@@ -32,10 +32,14 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
 
     /** Team Controller **/
     Route::controller(TeamController::class)->prefix('teams')->group(function () {
+        Route::post('/{id}/add-users', 'addUser');
+        
         Route::get('/', 'index');
         Route::post('/', 'store');
         Route::get('/{id}', 'show');
         Route::put('/{id}', 'update');
         Route::delete('/{id}', 'destroy');
+
+        // Route::delete('/{id}/users/{userId}', 'removeUser');
     });
 });

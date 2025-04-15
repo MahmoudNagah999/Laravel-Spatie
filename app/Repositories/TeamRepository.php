@@ -11,4 +11,10 @@ class TeamRepository extends BaseRepository
        parent::__construct($model);
    }
 
+
+
+   public function removeUser(int $id, int $userId): bool {
+    return $this->model->find($id)->users()->detach($userId);
+   }
+
 }

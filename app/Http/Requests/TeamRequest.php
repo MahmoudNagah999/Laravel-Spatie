@@ -27,8 +27,12 @@ class TeamRequest extends FormRequest
                 'description' => 'nullable|string',
             ],
             'update' => [
-                'name' => 'required|string|max:255|unique:teams,name,' . $this->route('team')->id,
+                'name' => 'required|string|max:255|unique:teams,name,' . $this->route()->id,
                 'description' => 'nullable|string',
+            ],
+            'addUser', 'removeUser' => [
+                'users' => 'required|array',
+                'users.*' => 'required|integer|exists:users,id',
             ],
             default => [],
         };
