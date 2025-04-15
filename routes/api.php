@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\TeamController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -27,5 +28,14 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
 
         Route::post('/{id}/status', 'toggleStatus');
         Route::post('/{id}/reset-password', 'resetPassword'); // reset password by admin
+    });
+
+    /** Team Controller **/
+    Route::controller(TeamController::class)->prefix('teams')->group(function () {
+        Route::get('/', 'index');
+        Route::post('/', 'store');
+        Route::get('/{id}', 'show');
+        Route::put('/{id}', 'update');
+        Route::delete('/{id}', 'destroy');
     });
 });
