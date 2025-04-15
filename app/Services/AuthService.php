@@ -26,11 +26,13 @@ class AuthService {
     }
 
     public function login(array $credentials) {
-        if(!Auth::attempt($credentials)) {
-            return response()->json(['error' => 'Unauthorized'], 401);
-        }
+        if(!Auth::attempt($credentials)) 
+            throw new \Exception('Invalid credentials', 401);
 
         $user = $this->userRepository->findByEmail($credentials['email']);
+        if (!$user->is_active) 
+            throw new \Exception('User is inactive', 403);
+
         $token = $user->createToken('Personal Access Token')->plainTextToken;
         $user->access_token = $token;
         $user->save(); 

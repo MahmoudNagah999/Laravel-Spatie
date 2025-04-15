@@ -5,8 +5,10 @@ use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-Route::post('/login', [AuthController::class, 'login'])->name('login');
-// Route::post('/register', [AuthController::class, 'register']);
+Route::controller(AuthController::class)->prefix('auth')->group(function () {
+    Route::post('/login', 'login');
+    Route::post('/register', 'register');
+});
 
 Route::group(['middleware' => 'auth:sanctum'], function () {
     /** Auth Controller **/
@@ -23,7 +25,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         Route::put('/{id}', 'update');
         Route::delete('/{id}', 'destroy');
 
-        // status toggle user (active/inactive)
-        // reset password by admin
+        Route::post('/{id}/status', 'toggleStatus');
+        Route::post('/{id}/reset-password', 'resetPassword'); // reset password by admin
     });
 });

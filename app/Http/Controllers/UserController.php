@@ -3,10 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\UserRequest;
-use App\Models\User;
 use App\Services\UserService;
 use App\Traits\ApiResponse;
-use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
@@ -65,6 +63,30 @@ class UserController extends Controller
         try {
             $this->userService->delete($id);
             return $this->success([], 'User deleted successfully', 200);
+        } catch (\Exception $e) {
+            return $this->error($e->getMessage(), 404);
+        }
+    }
+
+    public function toggleStatus(int $id)
+    {
+        try {
+            $this->userService->toggleStatus($id);
+            return $this->success([], 'User status updated successfully', 200);
+        } catch (\Exception $e) {
+            return $this->error($e->getMessage(), 404);
+        }
+    }
+
+    public function resetPassword(UserRequest $request, $id)
+    {
+        try {
+            $user = $this->userService->find($id);
+            $data['password'] = bcrypt($request->input('password'));
+            $this->userService->update($id, $data);
+
+            $user->tokens()->delete();
+            return $this->success([], 'User password updated successfully', 200);
         } catch (\Exception $e) {
             return $this->error($e->getMessage(), 404);
         }

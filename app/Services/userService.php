@@ -4,7 +4,6 @@ namespace App\Services;
 
 use App\Models\User;
 use App\Repositories\UserRepository;
-use Illuminate\Support\Facades\Auth;
 
 class UserService {
     protected UserRepository $userRepository;
@@ -35,6 +34,12 @@ class UserService {
 
     public function paginate(int $perPage = 10) {
         return $this->userRepository->paginate($perPage);
+    }
+
+    public function toggleStatus(int $id): User {
+        $user = $this->userRepository->find($id);
+        $data['is_active'] = !$user->is_active;
+        return $this->userRepository->update($id, $data);
     }
 
 

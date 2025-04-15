@@ -33,6 +33,9 @@ class UserRequest extends FormRequest
                 'email' => 'email|unique:users,email,' . $this->route('user'),
                 'password' => 'nullable|string|min:8',
             ],
+            'resetPassword' => [
+                'password' => 'required|string|min:8',
+            ],
             default => [],
 
        };
